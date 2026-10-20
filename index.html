@@ -32,7 +32,7 @@
 
   <main class="wrap">
     
-    <!-- TELA DE SELEÇÃO DOS DIAS (TELA INICIAL) -->
+    <!-- TELA DE SELEÇÃO DOS DIAS -->
     <div id="telaInicial">
       <section class="card">
         <h2>Simulado ENEM</h2>
@@ -65,9 +65,8 @@
       </div>
     </div>
 
-    <!-- TELA DE EXECUÇÃO DA PROVA (OCULTA INICIALMENTE) -->
+    <!-- TELA DE EXECUÇÃO DA PROVA -->
     <div id="telaProva" style="display: none;">
-      <!-- ÁREA DA QUESTÃO -->
       <section class="card">
         <div id="tagsContainer">
           <span class="tag" id="tagMateria">Linguagens, Códigos e suas Tecnologias</span>
@@ -78,7 +77,7 @@
         <p class="enun" id="enunciadoQuestao">Carregando enunciado da questão...</p>
 
         <div class="alts" id="alternativasContainer">
-          <!-- As alternativas serão renderizadas dinamicamente -->
+          <!-- Renderizado via JavaScript -->
         </div>
 
         <div class="nav">
@@ -91,7 +90,7 @@
       <section class="card">
         <h3>Cartão-resposta</h3>
         <div class="painel" id="painelGabarito">
-          <!-- Botões de 1 a 90 gerados dinamicamente -->
+          <!-- Gerado via JavaScript -->
         </div>
       </section>
     </div>
@@ -144,6 +143,6 @@
     <p>© 2026 Preparação para Provas. Todos os direitos reservados.</p>
   </footer>
 
-  <script src="js/app.js?v=4"></script>
+  <script src="js/app.js?v=5"></script>
 </body>
 </html>
