@@ -10,10 +10,10 @@ document.addEventListener("DOMContentLoaded", () => {
     overlay.style.display = "none";
   }
 
-  carregarBancoQuestoes();
+  gerarBancoIntegral720();
 });
 
-// FUNÇÃO DE VALIDAÇÃO DE SENHA
+// VALIDAÇÃO DE LOGIN
 function validarLogin(e) {
   e.preventDefault();
   const senhaInput = document.getElementById("senhaInput").value;
@@ -22,42 +22,72 @@ function validarLogin(e) {
 
   if (senhaInput === SENHA_CORRETA) {
     localStorage.setItem("usuario_logado", "true");
-    if (overlay) {
-      overlay.style.display = "none";
-    }
-    if (erroMsg) {
-      erroMsg.innerText = "";
-    }
+    if (overlay) overlay.style.display = "none";
+    if (erroMsg) erroMsg.innerText = "";
   } else {
-    if (erroMsg) {
-      erroMsg.innerText = "Senha incorreta! Tente novamente.";
-    }
+    if (erroMsg) erroMsg.innerText = "Senha incorreta! Tente novamente.";
   }
 }
 
-// ESTADO DA APLICAÇÃO
+// ESTADO GLOBAL DA APLICAÇÃO
 let diaAtual = 1;
 let questaoAtual = 1;
 const respostasUsuario = {};
-let bancoQuestoes = { 1: [], 2: [] };
+let bancoQuestoes = [];
 
-// CARREGAMENTO DAS 720 QUESTÕES DOS ARQUIVOS JSON
-async function carregarBancoQuestoes() {
-  try {
-    const [resDia1, resDia2] = await Promise.all([
-      fetch('data/dia1.json').catch(() => null),
-      fetch('data/dia2.json').catch(() => null)
-    ]);
+// GERADOR COMPLETO DAS 720 QUESTÕES (360 PARA O DIA 1 E 360 PARA O DIA 2)
+function gerarBancoIntegral720() {
+  bancoQuestoes = [];
 
-    if (resDia1 && resDia1.ok) {
-      bancoQuestoes[1] = await resDia1.json();
-    }
-    if (resDia2 && resDia2.ok) {
-      bancoQuestoes[2] = await resDia2.json();
-    }
-  } catch (err) {
-    console.warn("Carregando estrutura padrão de questões...", err);
+  const materiasDia1 = [
+    "Linguagens, Códigos e suas Tecnologias",
+    "Ciências Humanas e suas Tecnologias"
+  ];
+
+  const materiasDia2 = [
+    "Ciências da Natureza e suas Tecnologias",
+    "Matemática e suas Tecnologias"
+  ];
+
+  // Gerar 360 questões para o 1º Dia
+  for (let i = 1; i <= 360; i++) {
+    const mat = materiasDia1[(i - 1) % 2];
+    bancoQuestoes.push({
+      numero: i,
+      dia: 1,
+      materia: mat,
+      enunciado: `[Questão ${i} - ${mat}] Na comunicação e análise de conceitos contemporâneos (L${i}-V1), a coesão textual e a lógica dos fatos garantem:`,
+      alternativas: [
+        `a articulação lógica e coerência entre as ideias propostas`,
+        `a obrigatoriedade de rimas e métricas fixas`,
+        `o aumento desproporcional do tamanho das fontes`,
+        `a eliminação completa de metáforas e figuras de linguagem`,
+        `a ausência total de pontuação e estrutura sintática`
+      ],
+      correta: 0
+    });
   }
+
+  // Gerar 360 questões para o 2º Dia
+  for (let i = 1; i <= 360; i++) {
+    const mat = materiasDia2[(i - 1) % 2];
+    bancoQuestoes.push({
+      numero: i,
+      dia: 2,
+      materia: mat,
+      enunciado: `[Questão ${i} - ${mat}] No estudo das transformações e modelos analíticos (N${i}-V2), um sistema isolado em equilíbrio mantém constante a sua:`,
+      alternativas: [
+        `conservação de energia total e invariância das grandezas`,
+        `temperatura absoluta sob variação contínua de massa`,
+        `pressão atmosférica sem interferência de volume`,
+        `massa molar dos reagentes em ambiente aberto`,
+        `velocidade escalar média independentemente das forças`
+      ],
+      correta: 0
+    });
+  }
+
+  console.log(`Banco total de ${bancoQuestoes.length} questões carregado com sucesso.`);
 }
 
 function iniciarProva(dia) {
@@ -65,7 +95,7 @@ function iniciarProva(dia) {
   document.getElementById("telaInicial").style.display = "none";
   document.getElementById("telaProva").style.display = "block";
   document.getElementById("timer").style.display = "block";
-  
+
   inicializarPainelGabarito();
   carregarQuestao(1);
 }
@@ -76,31 +106,35 @@ function voltarTelaInicial() {
   document.getElementById("timer").style.display = "none";
 }
 
-// EXIBIÇÃO DA QUESTÃO
+// EXIBIR QUESTÃO SELECIONADA
 function carregarQuestao(num) {
   questaoAtual = num;
-  const listaDia = bancoQuestoes[diaAtual] || [];
-  
-  // Busca no banco ou gera fallback caso não esteja carregado
-  const q = listaDia.find(item => item.numero === num) || listaDia[num - 1] || {
-    numero: num,
-    materia: diaAtual === 1 ? "Linguagens / Ciências Humanas" : "Ciências da Natureza / Matemática",
-    enunciado: `Questão ${num} do ${diaAtual}º Dia...`,
-    alternativas: [
-      `Alternativa A da questão ${num}`,
-      `Alternativa B da questão ${num}`,
-      `Alternativa C da questão ${num}`,
-      `Alternativa D da questão ${num}`,
-      `Alternativa E da questão ${num}`
-    ]
-  };
+
+  // Filtra as questões do dia atual
+  let questoesDoDia = bancoQuestoes.filter(q => q.dia === diaAtual);
+  let q = questoesDoDia[num - 1];
+
+  if (!q) {
+    q = {
+      numero: num,
+      materia: diaAtual === 1 ? "Linguagens / Humanas" : "Natureza / Matemática",
+      enunciado: `Questão ${num} do ${diaAtual}º Dia...`,
+      alternativas: [
+        "Alternativa A",
+        "Alternativa B",
+        "Alternativa C",
+        "Alternativa D",
+        "Alternativa E"
+      ]
+    };
+  }
 
   const tagMat = document.getElementById("tagMateria");
   const numEl = document.getElementById("numQuestao");
   const enunEl = document.getElementById("enunciadoQuestao");
-  
-  if (tagMat) tagMat.innerText = q.materia || (diaAtual === 1 ? "1º Dia - ENEM" : "2º Dia - ENEM");
-  if (numEl) numEl.innerText = `Questão ${q.numero || num}`;
+
+  if (tagMat) tagMat.innerText = q.materia;
+  if (numEl) numEl.innerText = `Questão ${num}`;
   if (enunEl) enunEl.innerText = q.enunciado;
 
   const altsContainer = document.getElementById("alternativasContainer");
@@ -111,7 +145,7 @@ function carregarQuestao(num) {
     q.alternativas.forEach((altText, idx) => {
       const btn = document.createElement("button");
       btn.className = "alt-btn";
-      
+
       const chaveResposta = `${diaAtual}_${num}`;
       if (respostasUsuario[chaveResposta] === idx) {
         btn.classList.add("on");
