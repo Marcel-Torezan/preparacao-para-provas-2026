@@ -22,11 +22,11 @@
     </div>
   </div>
 
-  <!-- CABEÇALHO -->
+  <!-- CABEÇALHO PRINCIPAL -->
   <header class="topo">
     <div class="wrap">
       <a href="#" class="logo" onclick="voltarTelaInicial()">📘 Preparação para Provas <span>2026</span></a>
-      <div class="timer" id="timer" style="display: none;">⏱️ 05:30:00</div>
+      <div class="timer" id="timer" style="display: none;">⏱️ <span id="tempoRestante">05:30:00</span></div>
     </div>
   </header>
 
@@ -48,7 +48,7 @@
             <li>Ciências Humanas e suas Tecnologias: <b>45</b> questões</li>
             <li>Redação: <b>1</b> proposta</li>
           </ul>
-          <p class="muted" style="margin-bottom: 16px;">Duração: 5h30 · Banco: 360/90 questões</p>
+          <p class="muted" style="margin-bottom: 16px;">Duração: 5h30 · Total: 90 questões</p>
           <button class="btn" style="width: 100%;" onclick="iniciarProva(1)">Iniciar 1º Dia</button>
         </div>
 
@@ -59,13 +59,13 @@
             <li>Ciências da Natureza e suas Tecnologias: <b>45</b> questões</li>
             <li>Matemática e suas Tecnologias: <b>45</b> questões</li>
           </ul>
-          <p class="muted" style="margin-bottom: 16px;">Duração: 5h · Banco: 360/90 questões</p>
+          <p class="muted" style="margin-bottom: 16px;">Duração: 5h00 · Total: 90 questões</p>
           <button class="btn" style="width: 100%;" onclick="iniciarProva(2)">Iniciar 2º Dia</button>
         </div>
       </div>
     </div>
 
-    <!-- TELA DE EXECUÇÃO DA PROVA -->
+    <!-- TELA DA PROVA -->
     <div id="telaProva" style="display: none;">
       <section class="card">
         <div id="tagsContainer">
@@ -74,28 +74,50 @@
         </div>
         
         <h2 id="numQuestao">Questão 1</h2>
-        <p class="enun" id="enunciadoQuestao">Carregando enunciado da questão...</p>
+        <p class="enun" id="enunciadoQuestao">Carregando enunciado...</p>
 
         <div class="alts" id="alternativasContainer">
-          <!-- Renderizado via JavaScript -->
+          <!-- Renderizado via JS -->
         </div>
 
         <div class="nav">
           <button class="btn sec" id="btnAnterior" onclick="mudarQuestao(-1)">← Anterior</button>
           <button class="btn" id="btnProxima" onclick="mudarQuestao(1)">Próxima →</button>
+          <button class="btn ok" id="btnFinalizar" style="display: none;" onclick="finalizarSimulado()">Finalizar Simulado 🏆</button>
         </div>
       </section>
 
-      <!-- CARTÃO-RESPOSTA / PAINEL NUMÉRICO -->
+      <!-- CARTÃO-RESPOSTA 1 A 90 -->
       <section class="card">
-        <h3>Cartão-resposta</h3>
+        <h3>Cartão-resposta (90 Questões)</h3>
         <div class="painel" id="painelGabarito">
-          <!-- Gerado via JavaScript -->
+          <!-- Gerado via JS -->
         </div>
       </section>
     </div>
 
-    <!-- VÍDEOAULAS EXPLICATIVAS DO YOUTUBE -->
+    <!-- TELA DE RESULTADO / ACERTOS -->
+    <div id="telaResultado" style="display: none;">
+      <section class="card" style="text-align: center; padding: 40px 20px;">
+        <h2>🎯 Resultado do Simulado</h2>
+        <p class="muted">Confira o seu desempenho nas 90 questões deste dia:</p>
+
+        <div style="display: flex; justify-content: center; gap: 20px; margin: 30px 0; flex-wrap: wrap;">
+          <div style="background: #eff6ff; border: 2px solid #2563eb; padding: 20px; border-radius: 16px; min-width: 180px;">
+            <span style="font-size: 2.5rem; font-weight: 800; color: #2563eb;" id="resAcertos">0</span>
+            <p style="font-weight: 600; color: #1e293b; margin-top: 5px;">Acertos (de 90)</p>
+          </div>
+          <div style="background: #f0fdf4; border: 2px solid #16a34a; padding: 20px; border-radius: 16px; min-width: 180px;">
+            <span style="font-size: 2.5rem; font-weight: 800; color: #16a34a;" id="resPorcentagem">0%</span>
+            <p style="font-weight: 600; color: #1e293b; margin-top: 5px;">Aproveitamento</p>
+          </div>
+        </div>
+
+        <button class="btn" onclick="voltarTelaInicial()">Voltar ao Início</button>
+      </section>
+    </div>
+
+    <!-- VÍDEOAULAS -->
     <section class="card" style="margin-top: 20px;">
       🎥 <h2>Vídeoaulas Explicativas & Revisão ENEM</h2>
       <p class="muted">Reforce seus conhecimentos com os temas mais cobrados na prova:</p>
@@ -118,31 +140,12 @@
       </div>
     </section>
 
-    <!-- FORMULÁRIO DE RECOMENDAÇÕES -->
-    <section class="card">
-      💬 <h2>Envio de Recomendação & Sugestões</h2>
-      <p class="muted">Envie suas sugestões de melhoria diretamente para o suporte:</p>
-      
-      <form action="https://formspree.io/f/seu_form_id" method="POST" class="feedback-form">
-        <div class="form-group">
-          <label for="email">Seu E-mail:</label>
-          <input type="email" id="email" name="email" placeholder="seuemail@gmail.com" required>
-        </div>
-
-        <div class="form-group">
-          <label for="mensagem">Sua Recomendação:</label>
-          <textarea id="mensagem" name="mensagem" placeholder="Escreva aqui suas observações..." required></textarea>
-        </div>
-
-        <button type="submit" class="btn ok">Enviar Recomendação</button>
-      </form>
-    </section>
   </main>
 
   <footer class="rodape">
     <p>© 2026 Preparação para Provas. Todos os direitos reservados.</p>
   </footer>
 
-  <script src="js/app.js?v=8"></script>
+  <script src="js/app.js?v=90"></script>
 </body>
 </html>
