@@ -22,45 +22,82 @@
     </div>
   </div>
 
-  <!-- CONTEÚDO PRINCIPAL DO SITE -->
+  <!-- CABEÇALHO -->
   <header class="topo">
     <div class="wrap">
-      <a href="#" class="logo">📘 Preparação para Provas <span>2026</span></a>
-      <div class="timer" id="timer">⏱️ 05:30:00</div>
+      <a href="#" class="logo" onclick="voltarTelaInicial()">📘 Preparação para Provas <span>2026</span></a>
+      <div class="timer" id="timer" style="display: none;">⏱️ 05:30:00</div>
     </div>
   </header>
 
   <main class="wrap">
-    <!-- ÁREA DA QUESTÃO -->
-    <section class="card">
-      <div id="tagsContainer">
-        <span class="tag">Linguagens, Códigos e suas Tecnologias</span>
-        <span class="tag alt">Estilo ENEM</span>
-      </div>
-      
-      <h2 id="numQuestao">Questão 1</h2>
-      <p class="enun" id="enunciadoQuestao">Carregando enunciado da questão...</p>
+    
+    <!-- TELA DE SELEÇÃO DOS DIAS (TELA INICIAL) -->
+    <div id="telaInicial">
+      <section class="card">
+        <h2>Simulado ENEM</h2>
+        <p class="muted">Uma única prova: a cada acesso, as questões são sorteadas do banco e embaralhadas, junto com a ordem das alternativas.</p>
+      </section>
 
-      <div class="alts" id="alternativasContainer">
-        <!-- As alternativas serão renderizadas dinamicamente aqui -->
-      </div>
+      <div class="versoes">
+        <!-- CARD 1º DIA -->
+        <div class="card ver">
+          <h3>1º Dia</h3>
+          <ul style="padding-left: 20px; margin: 12px 0;">
+            <li>Linguagens, Códigos e suas Tecnologias: <b>45</b> questões</li>
+            <li>Ciências Humanas e suas Tecnologias: <b>45</b> questões</li>
+            <li>Redação: <b>1</b> proposta</li>
+          </ul>
+          <p class="muted" style="margin-bottom: 16px;">Duração: 5h30 · Banco: 360/90 questões</p>
+          <button class="btn" style="width: 100%;" onclick="iniciarProva(1)">Iniciar 1º Dia</button>
+        </div>
 
-      <div class="nav">
-        <button class="btn sec" id="btnAnterior" onclick="mudarQuestao(-1)">← Anterior</button>
-        <button class="btn" id="btnProxima" onclick="mudarQuestao(1)">Próxima →</button>
+        <!-- CARD 2º DIA -->
+        <div class="card ver">
+          <h3>2º Dia</h3>
+          <ul style="padding-left: 20px; margin: 12px 0;">
+            <li>Ciências da Natureza e suas Tecnologias: <b>45</b> questões</li>
+            <li>Matemática e suas Tecnologias: <b>45</b> questões</li>
+          </ul>
+          <p class="muted" style="margin-bottom: 16px;">Duração: 5h · Banco: 360/90 questões</p>
+          <button class="btn" style="width: 100%;" onclick="iniciarProva(2)">Iniciar 2º Dia</button>
+        </div>
       </div>
-    </section>
+    </div>
 
-    <!-- CARTÃO-RESPOSTA / PAINEL NUMÉRICO -->
-    <section class="card">
-      <h3>Cartão-resposta</h3>
-      <div class="painel" id="painelGabarito">
-        <!-- Botões de 1 a 90 gerados via JavaScript -->
-      </div>
-    </section>
+    <!-- TELA DE EXECUÇÃO DA PROVA (OCULTA INICIALMENTE) -->
+    <div id="telaProva" style="display: none;">
+      <!-- ÁREA DA QUESTÃO -->
+      <section class="card">
+        <div id="tagsContainer">
+          <span class="tag" id="tagMateria">Linguagens, Códigos e suas Tecnologias</span>
+          <span class="tag alt">Estilo ENEM</span>
+        </div>
+        
+        <h2 id="numQuestao">Questão 1</h2>
+        <p class="enun" id="enunciadoQuestao">Carregando enunciado da questão...</p>
+
+        <div class="alts" id="alternativasContainer">
+          <!-- As alternativas serão renderizadas dinamicamente -->
+        </div>
+
+        <div class="nav">
+          <button class="btn sec" id="btnAnterior" onclick="mudarQuestao(-1)">← Anterior</button>
+          <button class="btn" id="btnProxima" onclick="mudarQuestao(1)">Próxima →</button>
+        </div>
+      </section>
+
+      <!-- CARTÃO-RESPOSTA / PAINEL NUMÉRICO -->
+      <section class="card">
+        <h3>Cartão-resposta</h3>
+        <div class="painel" id="painelGabarito">
+          <!-- Botões de 1 a 90 gerados dinamicamente -->
+        </div>
+      </section>
+    </div>
 
     <!-- VÍDEOAULAS EXPLICATIVAS DO YOUTUBE -->
-    <section class="card">
+    <section class="card" style="margin-top: 20px;">
       🎥 <h2>Vídeoaulas Explicativas & Revisão ENEM</h2>
       <p class="muted">Reforce seus conhecimentos com os temas mais cobrados na prova:</p>
       
@@ -82,7 +119,7 @@
       </div>
     </section>
 
-    <!-- FORMULÁRIO DE RECOMENDAÇÕES E FEEDBACK -->
+    <!-- FORMULÁRIO DE RECOMENDAÇÕES -->
     <section class="card">
       💬 <h2>Envio de Recomendação & Sugestões</h2>
       <p class="muted">Envie suas sugestões de melhoria diretamente para o suporte:</p>
@@ -95,7 +132,7 @@
 
         <div class="form-group">
           <label for="mensagem">Sua Recomendação:</label>
-          <textarea id="mensagem" name="mensagem" placeholder="Escreva aqui suas observações ou recomendações..." required></textarea>
+          <textarea id="mensagem" name="mensagem" placeholder="Escreva aqui suas observações..." required></textarea>
         </div>
 
         <button type="submit" class="btn ok">Enviar Recomendação</button>
@@ -107,6 +144,6 @@
     <p>© 2026 Preparação para Provas. Todos os direitos reservados.</p>
   </footer>
 
-  <script src="js/app.js?v=3"></script>
+  <script src="js/app.js?v=4"></script>
 </body>
 </html>
