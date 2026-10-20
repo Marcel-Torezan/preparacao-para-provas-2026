@@ -9,6 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (logado === "true" && overlay) {
     overlay.style.display = "none";
   }
+
+  carregarBancoQuestoes();
 });
 
 // FUNÇÃO DE VALIDAÇÃO DE SENHA
@@ -33,10 +35,30 @@ function validarLogin(e) {
   }
 }
 
-// LÓGICA DA PROVA
+// ESTADO DA APLICAÇÃO
 let diaAtual = 1;
 let questaoAtual = 1;
 const respostasUsuario = {};
+let bancoQuestoes = { 1: [], 2: [] };
+
+// CARREGAMENTO DAS 720 QUESTÕES DOS ARQUIVOS JSON
+async function carregarBancoQuestoes() {
+  try {
+    const [resDia1, resDia2] = await Promise.all([
+      fetch('data/dia1.json').catch(() => null),
+      fetch('data/dia2.json').catch(() => null)
+    ]);
+
+    if (resDia1 && resDia1.ok) {
+      bancoQuestoes[1] = await resDia1.json();
+    }
+    if (resDia2 && resDia2.ok) {
+      bancoQuestoes[2] = await resDia2.json();
+    }
+  } catch (err) {
+    console.warn("Carregando estrutura padrão de questões...", err);
+  }
+}
 
 function iniciarProva(dia) {
   diaAtual = dia;
@@ -54,45 +76,16 @@ function voltarTelaInicial() {
   document.getElementById("timer").style.display = "none";
 }
 
-// BANCO DE DADOS DE EXEMPLO DE QUESTÕES
-const bancoQuestoes = {
-  1: [
-    {
-      numero: 1,
-      materia: "Linguagens, Códigos e suas Tecnologias",
-      enunciado: "Na comunicação contemporânea, a coesão textual garante:",
-      alternativas: [
-        "o aumento do tamanho da fonte",
-        "a obrigatoriedade de rimas",
-        "a eliminação de metáforas",
-        "a articulação lógica entre as ideias",
-        "a ausência de pontuação"
-      ]
-    }
-  ],
-  2: [
-    {
-      numero: 1,
-      materia: "Ciências da Natureza e suas Tecnologias",
-      enunciado: "No estudo das transformações de energia, um sistema isolado mantém constante sua:",
-      alternativas: [
-        "energia total",
-        "temperatura absoluta",
-        "pressão atmosférica",
-        "massa molar de reagentes",
-        "velocidade média"
-      ]
-    }
-  ]
-};
-
+// EXIBIÇÃO DA QUESTÃO
 function carregarQuestao(num) {
   questaoAtual = num;
   const listaDia = bancoQuestoes[diaAtual] || [];
-  const q = listaDia.find(item => item.numero === num) || {
+  
+  // Busca no banco ou gera fallback caso não esteja carregado
+  const q = listaDia.find(item => item.numero === num) || listaDia[num - 1] || {
     numero: num,
     materia: diaAtual === 1 ? "Linguagens / Ciências Humanas" : "Ciências da Natureza / Matemática",
-    enunciado: `Enunciado da questão ${num} do ${diaAtual}º Dia...`,
+    enunciado: `Questão ${num} do ${diaAtual}º Dia...`,
     alternativas: [
       `Alternativa A da questão ${num}`,
       `Alternativa B da questão ${num}`,
@@ -106,8 +99,8 @@ function carregarQuestao(num) {
   const numEl = document.getElementById("numQuestao");
   const enunEl = document.getElementById("enunciadoQuestao");
   
-  if (tagMat) tagMat.innerText = q.materia;
-  if (numEl) numEl.innerText = `Questão ${q.numero}`;
+  if (tagMat) tagMat.innerText = q.materia || (diaAtual === 1 ? "1º Dia - ENEM" : "2º Dia - ENEM");
+  if (numEl) numEl.innerText = `Questão ${q.numero || num}`;
   if (enunEl) enunEl.innerText = q.enunciado;
 
   const altsContainer = document.getElementById("alternativasContainer");
