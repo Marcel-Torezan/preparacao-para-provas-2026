@@ -1,0 +1,28 @@
+[
+  {
+    "numero": 1,
+    "materia": "Linguagens, Códigos e suas Tecnologias",
+    "enunciado": "(ENEM) A respeito da coesão e coerência textual na construção dos discursos contemporâneos, a articulação entre as ideias garante:",
+    "alternativas": [
+      "a progressão temática e a clareza do texto",
+      "a obrigatoriedade do uso de rimas ricas",
+      "a eliminação completa de figuras de linguagem",
+      "a ausência total de pontuação formal",
+      "o aumento da fonte visual do texto"
+    ],
+    "correta": 0
+  },
+  {
+    "numero": 2,
+    "materia": "Ciências Humanas e suas Tecnologias",
+    "enunciado": "(ENEM) O processo de urbanização brasileiro na segunda metade do século XX foi marcado por um intenso fluxo migratório campo-cidade. Esse fenômeno resultou em:",
+    "alternativas": [
+      "crescimento ordenado e planejado das periferias",
+      "processo de metropolização e segregação socioespacial",
+      "redução da demanda por serviços públicos básicos",
+      "desconcentração industrial imediata no Sudeste",
+      "igualdade de acesso às oportunidades de emprego"
+    ],
+    "correta": 1
+  }
+]

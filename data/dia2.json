@@ -1,0 +1,28 @@
+[
+  {
+    "numero": 1,
+    "materia": "Ciências da Natureza e suas Tecnologias",
+    "enunciado": "(ENEM) Um circuito elétrico residencial possui aparelhos ligados em paralelo. A principal vantagem dessa disposição em relação ao circuito em série é que:",
+    "alternativas": [
+      "a corrente elétrica é idêntica em todos os aparelhos",
+      "a diferença de potencial (voltagem) é a mesma em cada aparelho",
+      "a resistência equivalente do circuito aumenta",
+      "a interrupção em um aparelho desliga todos os outros",
+      "o consumo de energia total é reduzido à metade"
+    ],
+    "correta": 1
+  },
+  {
+    "numero": 2,
+    "materia": "Matemática e suas Tecnologias",
+    "enunciado": "(ENEM) Um comerciante aplica um desconto de 20% em um produto e, em seguida, um novo desconto de 10% sobre o valor já com desconto. O desconto percentual único equivalente é de:",
+    "alternativas": [
+      "30%",
+      "28%",
+      "25%",
+      "18%",
+      "15%"
+    ],
+    "correta": 1
+  }
+]
