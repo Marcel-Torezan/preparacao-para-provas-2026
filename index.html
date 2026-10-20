@@ -1,112 +1,112 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Preparação para Provas 2026 · Simulado ENEM</title>
-<link rel="stylesheet" href="css/global.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preparação para Provas 2026</title>
+  <link rel="stylesheet" href="css/global.css">
 </head>
 <body>
 
-<!-- TELA DE LOGIN OVERLAY -->
-<div id="login-screen" class="login-overlay">
-  <div class="login-card">
-    <div class="login-icon">🔒</div>
-    <h2>Acesso ao Simulado</h2>
-    <p>Digite a senha de acesso para liberar o conteúdo:</p>
-    <form id="login-form" onsubmit="validarLogin(event)">
-      <input type="password" id="senha-input" placeholder="Digite a senha de acesso..." required>
-      <button type="submit" class="btn btn-login">Acessar Simulado</button>
-      <p id="login-erro" class="erro-msg" hidden>Senha incorreta. Tente novamente!</p>
-    </form>
+  <!-- TELA DE LOGIN OVERLAY -->
+  <div id="loginOverlay" class="login-overlay">
+    <div class="login-card">
+      <div class="login-icon">📘</div>
+      <h2>Acesso ao Sistema</h2>
+      <p>Digite a senha de acesso para continuar</p>
+      <form id="loginForm" onsubmit="validarLogin(event)">
+        <input type="password" id="senhaInput" placeholder="Sua senha..." required>
+        <button type="submit" class="btn-login">Entrar</button>
+        <div id="erroMsg" class="erro-msg"></div>
+      </form>
+    </div>
   </div>
-</div>
 
-<!-- CONTEÚDO DO SITE (OCULTO ATÉ O LOGIN) -->
-<div id="site-content" style="display: none;">
+  <!-- CONTEÚDO PRINCIPAL DO SITE -->
   <header class="topo">
     <div class="wrap">
-      <a href="#" class="logo" onclick="home();return false">📘 Preparação para Provas <span>2026</span></a>
-      <div id="timer" class="timer" hidden>⏱ <span id="t">--:--:--</span></div>
+      <a href="#" class="logo">📘 Preparação para Provas <span>2026</span></a>
+      <div class="timer" id="timer">⏱️ 05:30:00</div>
     </div>
   </header>
 
-  <main class="wrap" id="app"></main>
+  <main class="wrap">
+    <!-- ÁREA DA QUESTÃO -->
+    <section class="card">
+      <div id="tagsContainer">
+        <span class="tag">Linguagens, Códigos e suas Tecnologias</span>
+        <span class="tag alt">Estilo ENEM</span>
+      </div>
+      
+      <h2 id="numQuestao">Questão 1</h2>
+      <p class="enun" id="enunciadoQuestao">Carregando enunciado da questão...</p>
 
-  <!-- SEÇÃO DE VIDEOAULAS RECOMENDADAS -->
-  <section class="wrap video-section">
-    <div class="card">
-      <h2>🎥 Videoaulas Explicativas & Revisão ENEM</h2>
+      <div class="alts" id="alternativasContainer">
+        <!-- As alternativas serão renderizadas dinamicamente aqui -->
+      </div>
+
+      <div class="nav">
+        <button class="btn sec" id="btnAnterior" onclick="mudarQuestao(-1)">← Anterior</button>
+        <button class="btn" id="btnProxima" onclick="mudarQuestao(1)">Próxima →</button>
+      </div>
+    </section>
+
+    <!-- CARTÃO-RESPOSTA / PAINEL NUMÉRICO -->
+    <section class="card">
+      <h3>Cartão-resposta</h3>
+      <div class="painel" id="painelGabarito">
+        <!-- Botões de 1 a 90 gerados via JavaScript -->
+      </div>
+    </section>
+
+    <!-- VÍDEOAULAS EXPLICATIVAS DO YOUTUBE -->
+    <section class="card">
+      🎥 <h2>Vídeoaulas Explicativas & Revisão ENEM</h2>
       <p class="muted">Reforce seus conhecimentos com os temas mais cobrados na prova:</p>
       
       <div class="video-grid">
         <div class="video-card">
-          <iframe src="https://www.youtube.com/embed/videoseries?list=PLf1lowyaGJly8Ie1_9yKThT8_X1nKzP3e" title="Revisão Redação ENEM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-          <h4>Redação nota 1000</h4>
+          <iframe src="https://www.youtube.com/embed/7Ad9IHTXmw0" title="Aulão ENEM de Química" allowfullscreen></iframe>
+          <h4>Aulão de Química - Temas Relevantes</h4>
         </div>
+
         <div class="video-card">
-          <iframe src="https://www.youtube.com/embed/videoseries?list=PLf1lowyaGJlzO4jB5_7v3WfK-9s6B5r-1" title="Matemática para o ENEM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-          <h4>Matemática para o ENEM</h4>
+          <iframe src="https://www.youtube.com/embed/kbSV5W1fLpg" title="Aulão ENEM de Biologia" allowfullscreen></iframe>
+          <h4>Aulão de Biologia - Revisão Geral</h4>
         </div>
+
         <div class="video-card">
-          <iframe src="https://www.youtube.com/embed/videoseries?list=PLf1lowyaGJlx-0_2XnO_p6TjG6pM-1e0u" title="História e Humanas ENEM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-          <h4>Ciências Humanas</h4>
+          <iframe src="https://www.youtube.com/embed/mOo8kH8hFhQ" title="Aulão ENEM de Matemática" allowfullscreen></iframe>
+          <h4>Aulão de Matemática - Temas Principais</h4>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- FORMULÁRIO DE RECOMENDAÇÕES -->
-  <section class="wrap feedback-section">
-    <div class="card">
-      <h2>💬 Deixe sua Recomendação ou Sugestão</h2>
-      <p class="muted">Sua opinião é fundamental para aprimorarmos o simulado!</p>
+    <!-- FORMULÁRIO DE RECOMENDAÇÕES E FEEDBACK -->
+    <section class="card">
+      💬 <h2>Envio de Recomendação & Sugestões</h2>
+      <p class="muted">Envie suas sugestões de melhoria diretamente para o suporte:</p>
       
-      <form action="https://formspree.io/f/marcel2025almeida@gmail.com" method="POST" class="feedback-form">
-        <div class="form-group">
-          <label for="nome">Seu Nome:</label>
-          <input type="text" id="nome" name="nome" placeholder="Ex: Maria Silva" required>
-        </div>
+      <form action="https://formspree.io/f/seu_form_id" method="POST" class="feedback-form">
         <div class="form-group">
           <label for="email">Seu E-mail:</label>
-          <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+          <input type="email" id="email" name="email" placeholder="seuemail@gmail.com" required>
         </div>
+
         <div class="form-group">
-          <label for="mensagem">Sua Recomendação / Comentário:</label>
-          <textarea id="mensagem" name="mensagem" style="min-height: 110px;" placeholder="Escreva aqui sua sugestão para o site..." required></textarea>
+          <label for="mensagem">Sua Recomendação:</label>
+          <textarea id="mensagem" name="mensagem" placeholder="Escreva aqui suas observações ou recomendações..." required></textarea>
         </div>
-        <button type="submit" class="btn">Enviar Recomendação 🚀</button>
+
+        <button type="submit" class="btn ok">Enviar Recomendação</button>
       </form>
-    </div>
-  </section>
+    </section>
+  </main>
 
-  <footer class="rodape wrap">Simulado independente, sem vínculo com o INEP. Questões originais no estilo ENEM.</footer>
-</div>
+  <footer class="rodape">
+    <p>© 2026 Preparação para Provas. Todos os direitos reservados.</p>
+  </footer>
 
-<script src="data/banco.js"></script>
-<script src="js/app.js"></script>
-<script>
-  function validarLogin(event) {
-    event.preventDefault();
-    const senha = document.getElementById('senha-input').value;
-    if (senha === 'simuladoenem26') {
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('site-content').style.display = 'block';
-      localStorage.setItem('simulado_autenticado', 'true');
-    } else {
-      document.getElementById('login-erro').hidden = false;
-    }
-  }
-
-  // Verifica se já está logado
-  if (localStorage.getItem('simulado_autenticado') === 'true') {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('site-content').style.display = 'block';
-  } else {
-    document.getElementById('login-screen').style.display = 'flex';
-    document.getElementById('site-content').style.display = 'none';
-  }
-</script>
+  <script src="js/script.js"></script>
 </body>
 </html>
