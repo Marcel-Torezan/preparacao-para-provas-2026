@@ -1,5 +1,5 @@
 // CONFIGURAÇÃO DA SENHA DE ACESSO
-const SENHA_CORRETA = "123456";
+const SENHA_CORRETA = "simuladoenem26";
 
 // EXECUÇÃO INICIAL AO CARREGAR A PÁGINA
 document.addEventListener("DOMContentLoaded", () => {
