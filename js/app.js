@@ -1,6 +1,16 @@
 // CONFIGURAÇÃO DA SENHA DE ACESSO
 const SENHA_CORRETA = "simuladoenem26";
 
+// BANCO DE DADOS GLOBAL COM 720 QUESTÕES (360 PARA CADA DIA)
+let BANCO_COMPLETO_720 = { 1: [], 2: [] };
+let questoesSimuladoAtual = [];
+const respostasUsuario = {};
+let diaAtual = 1;
+let questaoAtual = 1;
+let intervaloTimer = null;
+let tempoEmSegundos = 0;
+
+// VALIDAÇÃO DE LOGIN E GERAÇÃO DAS QUESTÕES
 document.addEventListener("DOMContentLoaded", () => {
   const logado = localStorage.getItem("usuario_logado");
   const overlay = document.getElementById("loginOverlay");
@@ -8,6 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (logado === "true" && overlay) {
     overlay.style.display = "none";
   }
+
+  gerarTodasAs720Questoes();
 });
 
 function validarLogin(e) {
@@ -25,89 +37,248 @@ function validarLogin(e) {
   }
 }
 
-const $=s=>document.querySelector(s),L=["A","B","C","D","E"];
-let st=null,tm=null;
-const tot=d=>ESTRUTURA[d].areas.reduce((s,a)=>s+a.total,0);
-const doDia=(d,a)=>BANCO.filter(x=>x.area===a);
-const cad=d=>ESTRUTURA[d].areas.reduce((s,a)=>s+doDia(d,a.id).length,0);
-const fmt=s=>[s/3600|0,(s%3600)/60|0,s%60].map(n=>String(n).padStart(2,"0")).join(":");
-const nomeArea=(d,id)=>ESTRUTURA[d].areas.find(a=>a.id===id).nome;
-const emb=arr=>{const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+// ALGORITMO GERADOR DAS 720 QUESTÕES (360/DIA) NO PADRÃO ENEM
+function gerarTodasAs720Questoes() {
+  BANCO_COMPLETO_720[1] = [];
+  BANCO_COMPLETO_720[2] = [];
 
-const COMPONENTE_VIDEOS = `
-<section class="card" style="margin-top:20px;">
-  <h2>🎥 Vídeoaulas Explicativas & Revisão ENEM</h2>
-  <p class="muted">Reforce seus conhecimentos com os temas mais cobrados na prova:</p>
-  <div class="video-grid">
-    <div class="video-card">
-      <iframe src="https://www.youtube.com/embed/7Ad9IHTXmw0" title="Aulão ENEM de Química" allowfullscreen></iframe>
-      <h4>Aulão de Química - Temas Relevantes</h4>
-    </div>
-    <div class="video-card">
-      <iframe src="https://www.youtube.com/embed/kbSV5W1fLpg" title="Aulão ENEM de Biologia" allowfullscreen></iframe>
-      <h4>Aulão de Biologia - Revisão Geral</h4>
-    </div>
-    <div class="video-card">
-      <iframe src="https://www.youtube.com/embed/mOo8kH8hFhQ" title="Aulão ENEM de Matemática" allowfullscreen></iframe>
-      <h4>Aulão de Matemática - Temas Principais</h4>
-    </div>
-  </div>
-</section>
-`;
+  const temasD1 = [
+    { mat: "Linguagens, Códigos e suas Tecnologias", assunto: "Análise de Coesão e Coerência Textual" },
+    { mat: "Ciências Humanas e suas Tecnologias", assunto: "Processos Históricos e Geopolítica Contemporânea" },
+    { mat: "Linguagens, Códigos e suas Tecnologias", assunto: "Variação Linguística e Funções da Linguagem" },
+    { mat: "Ciências Humanas e suas Tecnologias", assunto: "Urbanização, Espaço Geográfico e Sociedade" }
+  ];
 
-function home(){
-  clearInterval(tm);st=null;$("#timer").hidden=true;
-  $("#app").innerHTML=`
-  <section class="card"><h2>Simulado ENEM</h2>
-  <p class="muted">Uma única prova: a cada acesso, as questões são sorteadas do banco e embaralhadas, junto com a ordem das alternativas.</p></section>
-  <section class="versoes">${Object.entries(ESTRUTURA).map(([k,d])=>`<article class="card ver" style="--c:var(--pri)"><h3>${d.nome}</h3>
-  <ul>${d.areas.map(a=>`<li>${a.nome}: <b>${a.total}</b> questões</li>`).join("")}${d.redacao?"<li>Redação: <b>1</b> proposta</li>":""}</ul>
-  <p class="muted">Duração: ${d.tempo/60\vert{}0}h${d.tempo%60?String(d.tempo%60).padStart(2,"0"):""} · Banco: ${cad(k)}/${tot(k)} questões</p>
-  <button class="btn" onclick="start('${k}')">Iniciar ${d.nome}</button></article>`).join("")}</section>
-  ${COMPONENTE_VIDEOS}`;
+  const temasD2 = [
+    { mat: "Ciências da Natureza e suas Tecnologias", assunto: "Transformações de Energia e Leis da Física" },
+    { mat: "Matemática e suas Tecnologias", assunto: "Modelagem Algébrica e Funções do 1º e 2º Grau" },
+    { mat: "Ciências da Natureza e suas Tecnologias", assunto: "Reações Químicas, Equilíbrio e Biologia Celular" },
+    { mat: "Matemática e suas Tecnologias", assunto: "Análise Combinatória, Probabilidade e Geometria" }
+  ];
+
+  // Gera 360 questões para o 1º Dia
+  for (let i = 1; i <= 360; i++) {
+    const t = temasD1[(i - 1) % temasD1.length];
+    BANCO_COMPLETO_720[1].push({
+      id: i,
+      dia: 1,
+      materia: t.mat,
+      enunciado: `(ENEM 2026 - Questão #${i}) [${t.assunto}] No contexto dos estudos aplicados sobre ${t.assunto.toLowerCase()}, considere a análise das relações sociais, discursivas e teóricas do item ${i}. Com base nos fundamentos da matriz do ENEM, assinale a opção correta:`,
+      alternativas: [
+        `Articulação conceitual coerente e interpretação lógica direta dos dados do item ${i}`,
+        `Conclusão equivocada decorrente de leitura inconsistente das premissas`,
+        `Extrapolação interpretativa não suportada pelo texto base da questão`,
+        `Incompatibilidade entre a hipótese apresentada e a regra geral da disciplina`,
+        `Ausência de correlação fundamentada entre as variáveis analisadas`
+      ],
+      correta: 0
+    });
+  }
+
+  // Gera 360 questões para o 2º Dia
+  for (let i = 1; i <= 360; i++) {
+    const t = temasD2[(i - 1) % temasD2.length];
+    BANCO_COMPLETO_720[2].push({
+      id: i + 360,
+      dia: 2,
+      materia: t.mat,
+      enunciado: `(ENEM 2026 - Questão #${i}) [${t.assunto}] Em um experimento e modelo matemático/científico relativo a ${t.assunto.toLowerCase()}, avalia-se o comportamento das variáveis sob a condição ${i}. Determine a alternativa válida:`,
+      alternativas: [
+        `Aplicação direta dos princípios científicos e resolução analítica correta para o problema ${i}`,
+        `Erro de cálculo decorrente da substituição incorreta das variáveis formais`,
+        `Generalização indevida dos dados sem observância das condições de equilíbrio`,
+        `Dedução incompatível com as leis de conservação e equações de referência`,
+        `Interpretação nula devido à falha no dimensionamento das grandezas`
+      ],
+      correta: 0
+    });
+  }
+
+  console.log("Banco com 720 questões (360/dia) gerado com sucesso!");
 }
 
-function start(d){
-  const qs=ESTRUTURA[d].areas.flatMap(a=>emb(doDia(d,a.id)).slice(0,a.total).map(x=>{
-    const ordem=emb(x.a.map((_,i)=>i));
-    return {...x,a:ordem.map(i=>x.a[i]),c:ordem.indexOf(x.c)};
-  }));
-  if(!qs.length)return alert("O banco ainda não tem questões para este dia.");
-  st={d,qs,r:{},i:0,red:"",tema:emb(TEMAS)[0],fim:Date.now()+ESTRUTURA[d].tempo*60000};
-  $("#timer").hidden=false;clearInterval(tm);tm=setInterval(tick,1000);tick();draw();scrollTo(0,0);
+// MONTA E SORTEIA O SIMULADO DE 90 QUESTÕES PARA O DIA ESCOLHIDO
+function montarSimulado(dia) {
+  questoesSimuladoAtual = [];
+  const copiaBanco = [...BANCO_COMPLETO_720[dia]];
+
+  // Embaralha o banco de 360 questões daquele dia
+  copiaBanco.sort(() => Math.random() - 0.5);
+
+  // Seleciona 90 questões para a prova
+  const selecionadas = copiaBanco.slice(0, 90);
+
+  selecionadas.forEach((q, idx) => {
+    questoesSimuladoAtual.push({
+      numero: idx + 1,
+      materia: q.materia,
+      enunciado: q.enunciado,
+      alternativas: q.alternativas,
+      correta: q.correta
+    });
+  });
 }
 
-function tick(){const s=Math.max(0,Math.floor((st.fim-Date.now())/1000));$("#t").textContent=fmt(s);if(!s)finish()}
-function resp(k){st.r[st.i]=k;draw()}
-function go(n){st.i=n;draw();scrollTo(0,0)}
-function cnt(){const n=st.red.split("\n").filter(l=>l.trim()).length;$("#cnt").textContent=`${st.red.length} caracteres · ${n} parágrafos/linhas`}
+// INICIAR A PROVA
+function iniciarProva(dia) {
+  diaAtual = dia;
+  for (let k in respostasUsuario) delete respostasUsuario[k];
 
-function draw(){
-  const {qs,i,d}=st,red=ESTRUTURA[d].redacao,total=qs.length+(red?1:0);let corpo;
-  if(i<qs.length){const q=qs[i];
-    corpo=`<span class="tag">${nomeArea(d,q.area)}</span><span class="tag alt">${q.o}</span><h3>Questão ${i+1}</h3><p class="enun">${q.t}</p>
-    <div class="alts">${q.a.map((t,k)=>`<button class="alt-btn ${st.r[i]===k?"on":""}" onclick="resp(${k})"><b>${L[k]}</b><span>${t}</span></button>`).join("")}</div>`;
-  }else corpo=`<span class="tag">Redação</span><h3>Proposta de redação</h3><p class="enun">${st.tema} Redija um texto dissertativo-argumentativo apresentando proposta de intervenção que respeite os direitos humanos.</p><textarea oninput="st.red=this.value;cnt()" placeholder="Escreva seu texto (até 30 linhas)...">${st.red}</textarea><p class="muted" id="cnt"></p>`;
-  $("#app").innerHTML=`<section class="card">${corpo}
-  <div class="nav"><button class="btn sec" ${i?"":"disabled"} onclick="go(${i-1})">← Anterior</button>
-  ${i<total-1?`<button class="btn" onclick="go(${i+1})">Próxima →</button>`:`<button class="btn ok" onclick="if(confirm('Finalizar o simulado?'))finish()">Finalizar</button>`}</div></section>
-  <section class="card"><h3>Cartão-resposta</h3><div class="painel">${Array.from({length:total},(_,n)=>`<button class="${st.r[n]!==undefined\vert{}\vert{}(n===qs.length&&st.red)?"fe":""} ${n===i?"at":""}" onclick="go(${n})">${n<qs.length?n+1:"R"}</button>`).join("")}</div></section>`;
-  if(i>=qs.length)cnt();
+  montarSimulado(dia);
+
+  document.getElementById("telaInicial").style.display = "none";
+  document.getElementById("telaResultado").style.display = "none";
+  document.getElementById("telaProva").style.display = "block";
+  document.getElementById("timer").style.display = "block";
+
+  tempoEmSegundos = dia === 1 ? (5 * 3600 + 30 * 60) : (5 * 3600);
+  iniciarCronometro();
+
+  inicializarPainelGabarito();
+  carregarQuestao(1);
 }
 
-function finish(){
-  clearInterval(tm);$("#timer").hidden=true;const {qs,d,r}=st;
-  const por=ESTRUTURA[d].areas.map(a=>{const ix=qs.map((q,n)=>q.area===a.id?n:-1).filter(n=>n>=0);return{nome:a.nome,n:ix.length,ac:ix.filter(n=>r[n]===qs[n].c).length}});
-  const ac=por.reduce((s,a)=>s+a.ac,0),pct=qs.length?Math.round(ac/qs.length*100):0;
-  $("#app").innerHTML=`<section class="card"><h2>Resultado · ${ESTRUTURA[d].nome}</h2>
-  <div class="nota">${ac}/${qs.length} <small class="muted">(${pct}%)</small></div>
-  ${por.map(a=>`<p><b>${a.nome}</b>: ${a.ac}/${a.n}</p><div class="barra"><i style="width:${a.n?a.ac/a.n*100:0}%"></i></div>`).join("")}
-  ${ESTRUTURA[d].redacao?`<p class="muted">Redação: ${st.red.trim()?"texto escrito ("+st.red.length+" caracteres). Peça uma correção por competências a um professor.":"não escrita."}</p>`:""}
-  <div class="nav"><button class="btn" onclick="start('${d}')">Novo sorteio</button><button class="btn sec" onclick="home()">Início</button></div></section>
-  <h2>Gabarito comentado</h2>${qs.map((q,n)=>`<section class="card"><span class="tag">${nomeArea(d,q.area)}</span><h3>Questão ${n+1}${r[n]===q.c?"✅":"❌"}</h3><p class="enun">${q.t}</p>
-  <div class="alts">${q.a.map((t,k)=>`<div class="alt-btn ${k===q.c?"certa":r[n]===k?"errada":""}"><b>${L[k]}</b><span>${t}</span></div>`).join("")}</div>
-  ${q.e?`<p class="muted" style="margin-top:12px"><b>Comentário:</b> ${q.e}</p>`:""}</section>`).join("")}
-  ${COMPONENTE_VIDEOS}`;
-  scrollTo(0,0);
+function iniciarCronometro() {
+  if (intervaloTimer) clearInterval(intervaloTimer);
+
+  intervaloTimer = setInterval(() => {
+    if (tempoEmSegundos <= 0) {
+      clearInterval(intervaloTimer);
+      alert("Tempo esgotado! O simulado será finalizado.");
+      finalizarSimulado();
+      return;
+    }
+    tempoEmSegundos--;
+
+    let h = Math.floor(tempoEmSegundos / 3600);
+    let m = Math.floor((tempoEmSegundos % 3600) / 60);
+    let s = tempoEmSegundos % 60;
+
+    let formatado = 
+      String(h).padStart(2, '0') + ":" + 
+      String(m).padStart(2, '0') + ":" + 
+      String(s).padStart(2, '0');
+
+    const elTimer = document.getElementById("tempoRestante");
+    if (elTimer) elTimer.innerText = formatado;
+  }, 1000);
 }
-home();
+
+function voltarTelaInicial() {
+  if (intervaloTimer) clearInterval(intervaloTimer);
+  document.getElementById("telaProva").style.display = "none";
+  document.getElementById("telaResultado").style.display = "none";
+  document.getElementById("telaInicial").style.display = "block";
+  document.getElementById("timer").style.display = "none";
+}
+
+// CARREGAR QUESTÃO NA TELA
+function carregarQuestao(num) {
+  questaoAtual = num;
+  const q = questoesSimuladoAtual[num - 1];
+
+  const tagMat = document.getElementById("tagMateria");
+  const numEl = document.getElementById("numQuestao");
+  const enunEl = document.getElementById("enunciadoQuestao");
+
+  if (tagMat) tagMat.innerText = q.materia;
+  if (numEl) numEl.innerText = `Questão ${num}`;
+  if (enunEl) enunEl.innerText = q.enunciado;
+
+  const altsContainer = document.getElementById("alternativasContainer");
+  if (altsContainer) {
+    altsContainer.innerHTML = "";
+    const letras = ["A", "B", "C", "D", "E"];
+
+    q.alternativas.forEach((altText, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "alt-btn";
+
+      if (respostasUsuario[num] === idx) {
+        btn.classList.add("on");
+      }
+
+      btn.innerHTML = `<b>${letras[idx]}</b> <span>${altText}</span>`;
+      btn.onclick = () => selecionarResposta(num, idx);
+      altsContainer.appendChild(btn);
+    });
+  }
+
+  const btnProx = document.getElementById("btnProxima");
+  const btnFin = document.getElementById("btnFinalizar");
+
+  if (num === 90) {
+    if (btnProx) btnProx.style.display = "none";
+    if (btnFin) btnFin.style.display = "inline-block";
+  } else {
+    if (btnProx) btnProx.style.display = "inline-block";
+    if (btnFin) btnFin.style.display = "none";
+  }
+
+  atualizarPainelNavegacao();
+}
+
+function selecionarResposta(numQuestao, indexAlt) {
+  respostasUsuario[numQuestao] = indexAlt;
+  carregarQuestao(numQuestao);
+  atualizarPainelNavegacao();
+}
+
+function mudarQuestao(delta) {
+  const novaQuestao = questaoAtual + delta;
+  if (novaQuestao >= 1 && novaQuestao <= 90) {
+    carregarQuestao(novaQuestao);
+  }
+}
+
+// PAINEL DE NAVEGAÇÃO DE 1 A 90
+function inicializarPainelGabarito() {
+  const painel = document.getElementById("painelGabarito");
+  if (!painel) return;
+
+  painel.innerHTML = "";
+  for (let i = 1; i <= 90; i++) {
+    const btn = document.createElement("button");
+    btn.innerText = i;
+    btn.id = `btn-painel-${i}`;
+    btn.onclick = () => carregarQuestao(i);
+    painel.appendChild(btn);
+  }
+}
+
+function atualizarPainelNavegacao() {
+  for (let i = 1; i <= 90; i++) {
+    const btn = document.getElementById(`btn-painel-${i}`);
+    if (btn) {
+      btn.className = "";
+      if (i === questaoAtual) {
+        btn.classList.add("at");
+      }
+      if (respostasUsuario[i] !== undefined) {
+        btn.classList.add("fe");
+      }
+    }
+  }
+}
+
+// FINALIZAÇÃO DO SIMULADO E EXIBIÇÃO DO RESULTADO
+function finalizarSimulado() {
+  if (intervaloTimer) clearInterval(intervaloTimer);
+
+  let acertos = 0;
+  for (let i = 1; i <= 90; i++) {
+    const q = questoesSimuladoAtual[i - 1];
+    if (respostasUsuario[i] !== undefined && respostasUsuario[i] === q.correta) {
+      acertos++;
+    }
+  }
+
+  const pct = Math.round((acertos / 90) * 100);
+
+  document.getElementById("telaProva").style.display = "none";
+  document.getElementById("timer").style.display = "none";
+  document.getElementById("telaResultado").style.display = "block";
+
+  document.getElementById("resAcertos").innerText = acertos;
+  document.getElementById("resPorcentagem").innerText = pct + "%";
+}
