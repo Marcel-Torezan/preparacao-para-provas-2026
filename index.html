@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<!-- TELA DE LOGIN / BLOQUEIO -->
+<!-- TELA DE LOGIN OVERLAY -->
 <div id="login-screen" class="login-overlay">
   <div class="login-card">
     <div class="login-icon">🔒</div>
@@ -23,8 +23,8 @@
   </div>
 </div>
 
-<!-- CONTEÚDO PRINCIPAL DO SITE -->
-<div id="site-content" class="content-locked">
+<!-- CONTEÚDO DO SITE (OCULTO ATÉ O LOGIN) -->
+<div id="site-content" style="display: none;">
   <header class="topo">
     <div class="wrap">
       <a href="#" class="logo" onclick="home();return false">📘 Preparação para Provas <span>2026</span></a>
@@ -57,7 +57,7 @@
     </div>
   </section>
 
-  <!-- FORMULÁRIO DE SUGESTÕES / RECOMENDAÇÕES -->
+  <!-- FORMULÁRIO DE RECOMENDAÇÕES -->
   <section class="wrap feedback-section">
     <div class="card">
       <h2>💬 Deixe sua Recomendação ou Sugestão</h2>
@@ -92,17 +92,20 @@
     const senha = document.getElementById('senha-input').value;
     if (senha === 'simuladoenem26') {
       document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('site-content').classList.remove('content-locked');
+      document.getElementById('site-content').style.display = 'block';
       localStorage.setItem('simulado_autenticado', 'true');
     } else {
       document.getElementById('login-erro').hidden = false;
     }
   }
 
-  // Manter usuário logado na sessão do navegador
+  // Verifica se já está logado
   if (localStorage.getItem('simulado_autenticado') === 'true') {
     document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('site-content').classList.remove('content-locked');
+    document.getElementById('site-content').style.display = 'block';
+  } else {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('site-content').style.display = 'none';
   }
 </script>
 </body>
