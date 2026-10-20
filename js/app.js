@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     overlay.style.display = "none";
   }
 
-  gerarBancoIntegral720();
+  carregarBancoDeQuestoes();
 });
 
 // VALIDAÇÃO DE LOGIN
@@ -29,65 +29,25 @@ function validarLogin(e) {
   }
 }
 
-// ESTADO GLOBAL DA APLICAÇÃO
+// ESTADO GLOBAL
 let diaAtual = 1;
 let questaoAtual = 1;
 const respostasUsuario = {};
-let bancoQuestoes = [];
+let bancoQuestoes = { 1: [], 2: [] };
 
-// GERADOR COMPLETO DAS 720 QUESTÕES (360 PARA O DIA 1 E 360 PARA O DIA 2)
-function gerarBancoIntegral720() {
-  bancoQuestoes = [];
+// CARREGAMENTO DOS ARQUIVOS JSON
+async function carregarBancoDeQuestoes() {
+  try {
+    const [res1, res2] = await Promise.all([
+      fetch('data/dia1.json').catch(() => null),
+      fetch('data/dia2.json').catch(() => null)
+    ]);
 
-  const materiasDia1 = [
-    "Linguagens, Códigos e suas Tecnologias",
-    "Ciências Humanas e suas Tecnologias"
-  ];
-
-  const materiasDia2 = [
-    "Ciências da Natureza e suas Tecnologias",
-    "Matemática e suas Tecnologias"
-  ];
-
-  // Gerar 360 questões para o 1º Dia
-  for (let i = 1; i <= 360; i++) {
-    const mat = materiasDia1[(i - 1) % 2];
-    bancoQuestoes.push({
-      numero: i,
-      dia: 1,
-      materia: mat,
-      enunciado: `[Questão ${i} - ${mat}] Na comunicação e análise de conceitos contemporâneos (L${i}-V1), a coesão textual e a lógica dos fatos garantem:`,
-      alternativas: [
-        `a articulação lógica e coerência entre as ideias propostas`,
-        `a obrigatoriedade de rimas e métricas fixas`,
-        `o aumento desproporcional do tamanho das fontes`,
-        `a eliminação completa de metáforas e figuras de linguagem`,
-        `a ausência total de pontuação e estrutura sintática`
-      ],
-      correta: 0
-    });
+    if (res1 && res1.ok) bancoQuestoes[1] = await res1.json();
+    if (res2 && res2.ok) bancoQuestoes[2] = await res2.json();
+  } catch (err) {
+    console.warn("Carregando gerador auxiliar para questões pendentes...", err);
   }
-
-  // Gerar 360 questões para o 2º Dia
-  for (let i = 1; i <= 360; i++) {
-    const mat = materiasDia2[(i - 1) % 2];
-    bancoQuestoes.push({
-      numero: i,
-      dia: 2,
-      materia: mat,
-      enunciado: `[Questão ${i} - ${mat}] No estudo das transformações e modelos analíticos (N${i}-V2), um sistema isolado em equilíbrio mantém constante a sua:`,
-      alternativas: [
-        `conservação de energia total e invariância das grandezas`,
-        `temperatura absoluta sob variação contínua de massa`,
-        `pressão atmosférica sem interferência de volume`,
-        `massa molar dos reagentes em ambiente aberto`,
-        `velocidade escalar média independentemente das forças`
-      ],
-      correta: 0
-    });
-  }
-
-  console.log(`Banco total de ${bancoQuestoes.length} questões carregado com sucesso.`);
 }
 
 function iniciarProva(dia) {
@@ -106,28 +66,37 @@ function voltarTelaInicial() {
   document.getElementById("timer").style.display = "none";
 }
 
-// EXIBIR QUESTÃO SELECIONADA
-function carregarQuestao(num) {
-  questaoAtual = num;
-
-  // Filtra as questões do dia atual
-  let questoesDoDia = bancoQuestoes.filter(q => q.dia === diaAtual);
-  let q = questoesDoDia[num - 1];
+// BUSCAR OU GERAR QUESTÃO INDIVIDUAL
+function obterQuestao(dia, num) {
+  const listaDia = bancoQuestoes[dia] || [];
+  let q = listaDia.find(item => item.numero === num) || listaDia[num - 1];
 
   if (!q) {
+    // Gerador de suporte para garantir que todas as 90 questões funcionem
+    const materiasD1 = ["Linguagens, Códigos e suas Tecnologias", "Ciências Humanas e suas Tecnologias"];
+    const materiasD2 = ["Ciências da Natureza e suas Tecnologias", "Matemática e suas Tecnologias"];
+    const mat = dia === 1 ? materiasD1[(num - 1) % 2] : materiasD2[(num - 1) % 2];
+
     q = {
       numero: num,
-      materia: diaAtual === 1 ? "Linguagens / Humanas" : "Natureza / Matemática",
-      enunciado: `Questão ${num} do ${diaAtual}º Dia...`,
+      materia: mat,
+      enunciado: `(ENEM 2026 - Questão ${num}) Analise o conceito referente a ${mat}. Com base nos conhecimentos da disciplina, assinale a alternativa correta:`,
       alternativas: [
-        "Alternativa A",
-        "Alternativa B",
-        "Alternativa C",
-        "Alternativa D",
-        "Alternativa E"
+        `Compreensão direta e aplicação dos conceitos fundamentais da disciplina`,
+        `Interpretação errônea baseada em premissas incorretas`,
+        `Generalização indevida dos dados apresentados no texto`,
+        `Ausência de correlação lógica entre as variáveis analisadas`,
+        `Dedução incompatível com o modelo teórico vigente`
       ]
     };
   }
+  return q;
+}
+
+// RENDERIZAR QUESTÃO NA TELA
+function carregarQuestao(num) {
+  questaoAtual = num;
+  const q = obterQuestao(diaAtual, num);
 
   const tagMat = document.getElementById("tagMateria");
   const numEl = document.getElementById("numQuestao");
