@@ -1,7 +1,7 @@
-// CONFIGURAÇÕES DO LOGIN
-const SENHA_CORRETA = "123456"; // Altere aqui para a sua senha desejada
+// CONFIGURAÇÃO DA SENHA DE ACESSO
+const SENHA_CORRETA = "123456";
 
-// VERIFICAÇÃO AUTOMÁTICA AO CARREGAR A PÁGINA
+// EXECUÇÃO INICIAL AO CARREGAR A PÁGINA
 document.addEventListener("DOMContentLoaded", () => {
   const logado = localStorage.getItem("usuario_logado");
   const overlay = document.getElementById("loginOverlay");
@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   carregarQuestao(1);
 });
 
-// FUNÇÃO DE VALIDAR O LOGIN
+// FUNÇÃO DE VALIDAÇÃO DE SENHA
 function validarLogin(e) {
   e.preventDefault();
   const senhaInput = document.getElementById("senhaInput").value;
@@ -36,13 +36,7 @@ function validarLogin(e) {
   }
 }
 
-// LOGOUT / SAIR (OPCIONAL)
-function fazerLogout() {
-  localStorage.removeItem("usuario_logado");
-  location.reload();
-}
-
-// DADOS DE EXEMPLO DAS QUESTÕES
+// QUESTÕES DE EXEMPLO
 const questoes = [
   {
     numero: 1,
@@ -114,7 +108,7 @@ function selecionarResposta(numQuestao, indexAlt) {
   atualizarPainelNavegacao();
 }
 
-// MUDAR QUESTÃO (ANTERIOR / PRÓXIMA)
+// NAVEGAÇÃO DE QUESTÕES
 function mudarQuestao(delta) {
   const novaQuestao = questaoAtual + delta;
   if (novaQuestao >= 1 && novaQuestao <= 90) {
@@ -122,7 +116,7 @@ function mudarQuestao(delta) {
   }
 }
 
-// GERAR PAINEL NUMÉRICO DE QUESTÕES (1 a 90)
+// GERAR CARTÃO-RESPOSTA NUMÉRICO
 function inicializarPainelGabarito() {
   const painel = document.getElementById("painelGabarito");
   if (!painel) return;
@@ -137,7 +131,7 @@ function inicializarPainelGabarito() {
   }
 }
 
-// ATUALIZAR ESTADO DOS BOTÕES NO PAINEL NUMÉRICO
+// ATUALIZAR BOTAO SELECIONADO NO PAINEL
 function atualizarPainelNavegacao() {
   for (let i = 1; i <= 90; i++) {
     const btn = document.getElementById(`btn-painel-${i}`);
